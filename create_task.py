@@ -7,6 +7,10 @@ import sys
 import os
 import shutil
 
+import gaa_lib_loader
+
+from easy_sshscp import *
+
 
 def explanation_info():
     print("EXPLANATION: this program execute GAA task. please place this script on your home directory and execute this program on same dir of dl_image_manager")
