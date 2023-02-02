@@ -54,7 +54,7 @@ class GAATaskManager():
         os.chdir("../" + self.DL_IMANAGE_MANAGER_DIR)
         self.__print_pwd()
 
-        command = ["./learn_batch2.sh", dl_type]
+        command = ["./learn_batch.sh", dl_type]
         res = subprocess.check_output(command, stderr=subprocess.STDOUT,encoding='utf-8')
         print(res)
 
