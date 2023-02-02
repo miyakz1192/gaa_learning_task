@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
 import argparse
-import gaa_lib_config
 import subprocess
 import sys
 import os
 import shutil
 
 import gaa_lib_loader
-
 from easy_sshscp import *
 
+import task_manager_config
 
 def explanation_info():
     print("EXPLANATION: this program execute GAA task. please place this script on your home directory and execute this program on same dir of dl_image_manager")
@@ -38,8 +37,12 @@ class GAATaskManager():
         os.makedirs(output_dir)
 
     def create_task(self, dl_type):
+        if not(dl_type == "ssd" or dl_type == "resnet34"):
+            raise ValueError("invalid dl_type")
+        print("INFO: %s" % (dl_type))
         self.__do_learn_sh(dl_type)
         self.__backup_dl_image_manager_dir(dl_type)
+        self.__backup_deep_learning_and_download(dl_type)
 
     def __print_pwd(self):
         command = ["pwd"]
@@ -51,10 +54,6 @@ class GAATaskManager():
         os.chdir("../" + self.DL_IMANAGE_MANAGER_DIR)
         self.__print_pwd()
 
-        if not(dl_type == "ssd" or dl_type == "resnet34"):
-            raise ValueError("invalid dl_type")
-
-        print("INFO: %s" % (dl_type))
         command = ["./learn_batch2.sh", dl_type]
         res = subprocess.check_output(command, stderr=subprocess.STDOUT,encoding='utf-8')
         print(res)
@@ -67,6 +66,13 @@ class GAATaskManager():
         except:
             print("INFO: __delete_data_set_dir has error but ignored")
 
+    def __backup_deep_learning_and_download(self, dl_type):
+        ssh = EasySSHSCP()
+        short_file_name = dl_type
+        remote_host = dl_type
+        tar_gz_file_path = "/tmp/%s.tar.gz" % (short_file_name)
+        ssh.ssh(remote_host, "tar cvfz %s %s" % (tar_gz_file_path, task_manager_config.backup_target_dir[dl_type])) 
+        ssh.download(remote_host, tar_gz_file_path, self.LEARNING_TASK_OUTPUT_DIR + "/" + self.task_name + "/")
 
     def __backup_dl_image_manager_dir(self, dl_type):
         os.chdir("../")
@@ -91,5 +97,6 @@ if __name__ == "__main__":
 
     gaa_task_manager = GAATaskManager(args.task_name)
     gaa_task_manager.create_task("ssd")
+    gaa_task_manager.create_task("resnet34")
 
 
