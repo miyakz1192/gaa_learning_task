@@ -54,7 +54,8 @@ class GAATaskManager():
         os.chdir("../" + self.DL_IMANAGE_MANAGER_DIR)
         self.__print_pwd()
 
-        command = ["./learn_batch.sh", dl_type]
+        #command = ["./learn_batch2.sh", dl_type] # for debug
+        command = ["./learn_batch.sh", dl_type] # for production run
         res = subprocess.check_output(command, stderr=subprocess.STDOUT,encoding='utf-8')
         print(res)
 
@@ -71,7 +72,7 @@ class GAATaskManager():
         short_file_name = dl_type
         remote_host = dl_type
         tar_gz_file_path = "/tmp/%s.tar.gz" % (short_file_name)
-        ssh.ssh(remote_host, "tar cvfz %s %s" % (tar_gz_file_path, task_manager_config.backup_target_dir[dl_type])) 
+        ssh.ssh(remote_host, "tar cvfz %s %s" % (tar_gz_file_path, gaa_learning_task_config.backup_target_dir[dl_type])) 
         ssh.download(remote_host, tar_gz_file_path, self.LEARNING_TASK_OUTPUT_DIR + "/" + self.task_name + "/")
 
     def __backup_dl_image_manager_dir(self, dl_type):
@@ -98,5 +99,7 @@ if __name__ == "__main__":
     gaa_task_manager = GAATaskManager(args.task_name)
     gaa_task_manager.create_task("ssd")
     gaa_task_manager.create_task("resnet34")
+
+    print("INFO: program finished successfully!!!")
 
 
