@@ -90,6 +90,7 @@ if __name__ == "__main__":
     parser.add_argument("task_name", type=str)
     parser.add_argument("--memo", type=str)
     parser.add_argument("--explanation_of_this", type=str)
+    parser.add_argument("--algo", type=str, default="all")
     args = parser.parse_args()
 
     if args.explanation_of_this is not None:
@@ -97,8 +98,17 @@ if __name__ == "__main__":
         sys.exit(0)
 
     gaa_task_manager = GAATaskManager(args.task_name)
-    gaa_task_manager.create_task("ssd")
-    gaa_task_manager.create_task("resnet34")
+
+    if args.algo == "all":
+        gaa_task_manager.create_task("ssd")
+        gaa_task_manager.create_task("resnet34")
+    elif args.algo == "ssd":
+        gaa_task_manager.create_task("ssd")
+    elif args.algo == "resnet34":
+        gaa_task_manager.create_task("resnet34")
+    else:
+        print("ERROR: invalid algo %s" % (args.algo))
+        raise ValueError("")
 
     print("INFO: program finished successfully!!!")
 
