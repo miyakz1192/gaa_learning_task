@@ -50,7 +50,7 @@ class GAATaskManager():
         print(res)
 
     def __get_lines(self, cmd):
-        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,encoding='utf-8')
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,encoding='utf-8')
 
         while True:
             line = proc.stdout.readline()
