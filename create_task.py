@@ -49,6 +49,16 @@ class GAATaskManager():
         res = subprocess.check_output(command)
         print(res)
 
+    def __get_lines(self, cmd):
+        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,encoding='utf-8')
+
+        while True:
+            line = proc.stdout.readline()
+            if line:
+                yield line
+
+            if not line and proc.poll() is not None:
+                break
 
     def __do_learn_sh(self, dl_type):
         os.chdir("../" + self.DL_IMANAGE_MANAGER_DIR)
@@ -56,8 +66,12 @@ class GAATaskManager():
 
         #command = ["./learn_batch2.sh", dl_type] # for debug
         command = ["./learn_batch.sh", dl_type] # for production run
-        res = subprocess.check_output(command, stderr=subprocess.STDOUT,encoding='utf-8')
-        print(res)
+        for res in self.__get_lines(command):
+            sys.stdout.write(res) #avoid from multiple LF
+            sys.stdout.flush()
+
+#        res = subprocess.check_output(command, stderr=subprocess.STDOUT,encoding='utf-8')
+#        print(res)
 
         os.chdir("../" + self.LEARNING_TASK_DIR)
 
