@@ -112,8 +112,13 @@ class GAALearningOutputDeployManager():
         ssh.upload(best_weight_file_name, remote_host, remote_path)
         print("INFO: %s%s uploaded successfully" % (remote_path,os.path.basename(best_weight_file_name)))
 
-    def deploy(self):
-        for dl_type in gaa_constants.gaa_dl_services:
+    def deploy(self, algo="all"):
+        if algo == "all":
+            algo = gaa_constants.gaa_dl_services
+        else:
+            algo = [algo]
+        
+        for dl_type in algo:
             print("INFO: trying deploying about %s" % (dl_type))
             self.__send_best_weight_to_remote(dl_type)
             self.__send_data_set_to_remote(dl_type)
@@ -124,6 +129,7 @@ class GAALearningOutputDeployManager():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("task_name", type=str)
+    parser.add_argument("--algo", type=str, default="all")
     parser.add_argument("--memo", type=str)
     parser.add_argument("--explanation_of_this", type=str)
     args = parser.parse_args()
@@ -133,6 +139,6 @@ if __name__ == "__main__":
         sys.exit(0)
 
     gaa_deploy = GAALearningOutputDeployManager(args.task_name)
-    gaa_deploy.deploy()
+    gaa_deploy.deploy(args.algo)
     print("INFO: program ended successfully!")
 
